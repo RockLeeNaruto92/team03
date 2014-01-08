@@ -4,7 +4,11 @@
 package com.example.photosound;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 
 public class CameraActivity extends Activity {
    
@@ -53,15 +58,17 @@ public class CameraActivity extends Activity {
 		param.width = imgWidth;
 		param.height = imgHeight;
 		imageView.setLayoutParams(param);
-		/*
-		int buttonWidth = Math.round(displayMetric.widthPixels*0.2f);
-		int buttonHeight = Math.round(displayMetric.heightPixels*0.1f);
-		LayoutParams param1  = (LayoutParams)Picture.getLayoutParams();
-		param.width = buttonWidth;
-		param.height = buttonHeight;
-		//Record.setLayoutParams(param1);
-		Picture.setLayoutParams(param1);
-*/
+		
+		Record.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(CameraActivity.this, DienClass.class);
+				intent.putExtra("imgPath", getPhotoUri());
+				startActivity(intent);
+			}
+		});
+
 	}
 
 	@Override
@@ -71,11 +78,12 @@ public class CameraActivity extends Activity {
 		return true;
 	}
 	public void onTakePhotoClick(View v){
-		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 		deletePhoto();
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoUri());
+		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		//intent.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoUri());
+		Log.d(TAG, "Create anh");
 		startActivityForResult(intent, 0);
-		Record.setVisibility(View.VISIBLE);
+		Log.d(TAG, "Tra anh ve");
 	}
 	
 	public Uri getPhotoUri(){
@@ -84,6 +92,7 @@ public class CameraActivity extends Activity {
 		try{
 			if(!tempPhoto.exists()){
 				tempPhoto.createNewFile();
+				Log.d("TAGANH", "ok");
 			}
 		
 			Uri temPhotoUri = Uri.fromFile(tempPhoto);
@@ -105,36 +114,78 @@ public class CameraActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Record.setVisibility(View.VISIBLE);
+
+	      Log.v(TAG, "Result  :"+resultCode);
+
 	      if(resultCode == RESULT_CANCELED) return;
+	      
+	     Uri fileName = data.getData();
+	     
+	     Bitmap bmp = null;
+	     try{
+	    	 InputStream is = getContentResolver().openInputStream(fileName);
+	    	 bmp = BitmapFactory.decodeStream(is);
+	    	 is.close();
+	    	 
+	    	 if(bmp != null){
+	    		  bmp = rotateBitmap(bmp,fileName);
+	    		 imageView.setImageBitmap(bmp);
+	    	 }
+	     }catch(Exception e){
+	    	 Log.e("decode","" + e.getMessage());
+	     }
+	     
 	   
-	      String imgPath = Environment.getExternalStorageDirectory() + File.separator + "tmp.jpg";
-	      Log.v(TAG, imgPath);
+	      //String imgPath = Environment.getExternalStorageDirectory() + File.separator + "tmp.jpg";
+	     // Log.v(TAG, "Duong dan anh :"+imgPath);
 //	      Bitmap bmp = BitmapFactory.decodeFile(imgPath);
-	      Bitmap bmp = rotateBitmap(imgPath);
-	      imageView.setImageBitmap(bmp);
+	     // echo 
+	      //Bitmap bmp = rotateBitmap(imgPath);
+	     // imageView.setImageBitmap(bmp);
+
+	    //  deletePhoto();
+	 /*     String path = Environment.getExternalStorageDirectory().toString();
+	        OutputStream fOutputStream = null;
+	        File file = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + File.separator+"tmp.jpg");
+	        try {
+	        	file.createNewFile();
+	            fOutputStream = new FileOutputStream(file);
+
+				bmp.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
+
+	            fOutputStream.flush();
+	            fOutputStream.close();
+
+	            MediaStore.Images.Media.insertImage(getContentResolver(), file.getAbsolutePath(), file.getName(), file.getName());
+	        } catch (FileNotFoundException e) {
+	            e.printStackTrace();
+	            Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
+	            return;
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
+	            return;
+	        }*/
 	      
 	   }
 	
-	public  Bitmap rotateBitmap(String fileName) {
 
-		Bitmap bitmap = null;
+	
+	private  Bitmap rotateBitmap(Bitmap inputBmp,Uri fileName) {
+
 		Bitmap rotatedBitmap = null;
 
 		try {
-			bitmap = BitmapFactory.decodeFile(fileName);
-			if (bitmap == null) {
-				return null;
-			}
 
-			ExifInterface ex = new ExifInterface(fileName);
+			ExifInterface ex = new ExifInterface(fileName.getPath());
 			int orientation = ex.getAttributeInt(ExifInterface.TAG_ORIENTATION,
 					ExifInterface.ORIENTATION_UNDEFINED);
 
-			Uri fileUri = Uri.fromFile(new File(fileName));
 			if (orientation == ExifInterface.ORIENTATION_UNDEFINED) {
 				Cursor cursor = this
 						.getContentResolver()
-						.query(fileUri,
+						.query(fileName,
 								new String[] { MediaStore.Images.ImageColumns.ORIENTATION },
 								null, null, null);
 
@@ -182,10 +233,10 @@ public class CameraActivity extends Activity {
 			if (degree > 0) {
 				Matrix matrix = new Matrix();
 				matrix.postRotate(degree);
-				rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-						bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+				rotatedBitmap = Bitmap.createBitmap(inputBmp, 0, 0,
+						inputBmp.getWidth(), inputBmp.getHeight(), matrix, true);
 			} else {
-				rotatedBitmap = bitmap;
+				rotatedBitmap = inputBmp;
 			}
 
 		} catch (Exception e) {
