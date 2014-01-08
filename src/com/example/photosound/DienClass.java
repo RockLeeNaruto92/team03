@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 public class DienClass extends Activity{
 	private TextView Textv;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -20,7 +20,7 @@ public class DienClass extends Activity{
 	    Bundle b = iin.getExtras();
 	    if(b!=null)
 	    {
-	        String j =(String) b.get("name");
+	        String j =(String) b.get("imgPath");
 	        Textv.setText(j);
 	    }
 

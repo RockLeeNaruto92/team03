@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="tranduythanh.com"
+    package="android.vn"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="17" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="tranduythanh.com.MainActivity"
+            android:name="com.example.photosound.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +22,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.photosound.HomeActivity"
+            android:label="@string/title_activity_hinh_anh" >
+        </activity>
+        <activity
+            android:name="com.example.photosound.MarkedActivity"
+            android:label="@string/title_activity_bai_hat" >
+        </activity>
+        <activity
+            android:name="com.example.photosound.ProfileActivity"
+            android:label="@string/title_activity_phim_anh" >
+        </activity>
+        <activity 
+            android:name="com.example.photosound.CameraActivity"
+            android:label="camera"
+            android:launchMode="singleTask"
+            ></activity>
+        <activity 
+            android:name="com.example.photosound.GetImageFromGallery"
+            android:label = "Gallery"
+            ></activity>
+        <activity 
+            android:name="com.example.photosound.DienClass"
+            ></activity>
+        
     </application>
 
 </manifest>

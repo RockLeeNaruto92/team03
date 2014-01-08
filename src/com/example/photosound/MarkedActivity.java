@@ -62,18 +62,20 @@ public class MarkedActivity extends Activity implements OnClickListener{
 		myBackupBunder = savedInstanceState;
 		setContentView(R.layout.activity_marked);
 		getObjectXml();
-	}
-	
-    public void getObjectXml(){
-    	tvMsg = (TextView)findViewById(R.id.tvMsg);
-    	setAllImageList();
-    	viewImage = (GridView) findViewById(R.id.gridView1);
+        
+		viewImage = (GridView) findViewById(R.id.gridView1);
     	
     	adapter = new  MyImageAdapter(this, mThumbd);
     	adapter.setListImage(ImageList);
 		viewImage.setAdapter(adapter);
 		//viewImage.setOnClickListener(this);
+		//viewImage.setOnItemClickListener(this); 
+	}
 	
+    public void getObjectXml(){
+    	tvMsg = (TextView)findViewById(R.id.tvMsg);
+    	setAllImageList();
+    	
     }
     
     public void onItemClick(AdapterView<?> arg0,

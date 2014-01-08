@@ -27,7 +27,7 @@ public class MainActivity extends TabActivity {
 		//Thiết lập tên tab hiển thị và icon
 		photospec.setIndicator("Home", getResources().getDrawable(R.drawable.icon_photos_tab));
 		//Thiết lập nôi dung cho tab này là activity HinhAnhActivity.class
-		Intent photosIntent = new Intent(this, HomeActivity.class);
+		Intent photosIntent = new Intent(MainActivity.this, HomeActivity.class);
 		photospec.setContent(photosIntent);
 
 		//Khởi tạo tab nghe nhạc

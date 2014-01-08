@@ -18,16 +18,16 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginBottom="5px"
-        android:background="@drawable/Photo-Video-Slr-camera-icon"
+        android:background="@drawable/takephoto_icon"
         />
     <ImageButton 
     	android:id="@+id/BtnGetImageFrom"
     	android:layout_height="wrap_content"
     	android:layout_width="wrap_content"
     	android:layout_marginBottom="5px"
-    	android:background="@drawable/gallery-icon"
+    	android:background="@drawable/gallery_icon"
         />
-    
+  
     
     <TextView
         android:layout_width="fill_parent"

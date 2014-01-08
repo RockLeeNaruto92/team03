@@ -34,6 +34,19 @@
             android:name="com.example.photosound.ProfileActivity"
             android:label="@string/title_activity_phim_anh" >
         </activity>
+        <activity 
+            android:name="com.example.photosound.CameraActivity"
+            android:label="camera"
+            android:launchMode="singleTask"
+            ></activity>
+        <activity 
+            android:name="com.example.photosound.GetImageFromGallery"
+            android:label = "Gallery"
+            ></activity>
+        <activity 
+            android:name="com.example.photosound.DienClass"
+            ></activity>
+        
     </application>
 
 </manifest>
