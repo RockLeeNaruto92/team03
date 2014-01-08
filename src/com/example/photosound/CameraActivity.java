@@ -63,8 +63,8 @@ public class CameraActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(CameraActivity.this, DienClass.class);
-				intent.putExtra("imgPath", getPhotoUri());
+				Intent intent = new Intent(CameraActivity.this, PictureActivity.class);
+				intent.putExtra("BitmapImage", Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator + "rotate.jpg");
 				startActivity(intent);
 			}
 		});
@@ -77,6 +77,12 @@ public class CameraActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	
+	/**
+	 * @author huynh
+	 * @param v
+	 */
 	public void onTakePhotoClick(View v){
 		deletePhoto();
 		Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -86,6 +92,10 @@ public class CameraActivity extends Activity {
 		Log.d(TAG, "Tra anh ve");
 	}
 	
+	/**
+	 * @athor huynh
+	 * @return Uri
+	 */
 	public Uri getPhotoUri(){
 		File rootFolder = Environment.getExternalStorageDirectory();
 		File tempPhoto = new File(rootFolder.getAbsolutePath()+File.separator + "tmp.jpg");
@@ -103,7 +113,9 @@ public class CameraActivity extends Activity {
 		return Uri.EMPTY;
 		}
 	}
-	
+	/**
+	 * @author huynh
+	 */
 	public void deletePhoto(){
 		File rootFolder = Environment.getExternalStorageDirectory();
 		File tempPhoto = new File(rootFolder.getAbsolutePath()+File.separator + "tmp.jpg");
@@ -112,6 +124,10 @@ public class CameraActivity extends Activity {
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Record.setVisibility(View.VISIBLE);
@@ -137,7 +153,7 @@ public class CameraActivity extends Activity {
 	     }
 	     
 	   
-	      //String imgPath = Environment.getExternalStorageDirectory() + File.separator + "tmp.jpg";
+	    // String imgPath = Environment.getExternalStorageDirectory() + File.separator + "rotate.jpg";
 	     // Log.v(TAG, "Duong dan anh :"+imgPath);
 //	      Bitmap bmp = BitmapFactory.decodeFile(imgPath);
 	     // echo 
@@ -145,9 +161,9 @@ public class CameraActivity extends Activity {
 	     // imageView.setImageBitmap(bmp);
 
 	    //  deletePhoto();
-	 /*     String path = Environment.getExternalStorageDirectory().toString();
+	      String path = Environment.getExternalStorageDirectory().toString();
 	        OutputStream fOutputStream = null;
-	        File file = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + File.separator+"tmp.jpg");
+	        File file = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + File.separator+"rotate.jpg");
 	        try {
 	        	file.createNewFile();
 	            fOutputStream = new FileOutputStream(file);
@@ -166,7 +182,7 @@ public class CameraActivity extends Activity {
 	            e.printStackTrace();
 	            Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
 	            return;
-	        }*/
+	        }
 	      
 	   }
 	

@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.app.Activity;
@@ -38,11 +39,13 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
-public class MarkedActivity extends Activity implements OnClickListener{
+
+public class MarkedActivity extends Activity implements OnItemClickListener{
 	
 	List<String> ImageList;
 	public Integer[]mThumbd;
 	public Integer Image_Count = 0;
+	private ImageButton BtnPlay;
 	TextView tvMsg;
 	GridView viewImage;
 	
@@ -68,8 +71,9 @@ public class MarkedActivity extends Activity implements OnClickListener{
     	adapter = new  MyImageAdapter(this, mThumbd);
     	adapter.setListImage(ImageList);
 		viewImage.setAdapter(adapter);
-		//viewImage.setOnClickListener(this);
-		//viewImage.setOnItemClickListener(this); 
+		viewImage.setOnItemClickListener(this); 
+		
+		
 	}
 	
     public void getObjectXml(){
@@ -86,24 +90,35 @@ public class MarkedActivity extends Activity implements OnClickListener{
     	public void myAction(int posistion)
     	{
     		setContentView(R.layout.solo_picture);
-    		
+    		BtnPlay = (ImageButton)findViewById(R.id.Play);
     		tvSoloMsg=(TextView) findViewById(R.id.tvSoloMsg);
-    		tvSoloMsg.setText("Image at "+posistion);
+    		tvSoloMsg.setText("Image name "+getImagename(mThumbd[posistion]));
     		ivSoloPicture=(ImageView) findViewById(R.id.imgSolo);
 
     		String imgPath = getImagename(mThumbd[posistion]);
-    		Bitmap bmp = BitmapFactory.decodeFile(imgPath);
+    		Bitmap bmp = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"PhotoSound"+File.separator+imgPath);
     		ivSoloPicture.setImageBitmap(bmp);
     		
     		btnBack=(Button) findViewById(R.id.btnBack);
-    		
+
     		btnBack.setOnClickListener(new View.OnClickListener() {
     			public void onClick(View arg0) {
     				onCreate(myBackupBunder);
     			}
     		});
+    		
+    		BtnPlay.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+    		
     	}
-    
+    	
+    	
     
 	public void setAllImageList(){
 		ImageList = getListOfFiles(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator+"PhotoSound"+File.separator );
@@ -112,10 +127,11 @@ public class MarkedActivity extends Activity implements OnClickListener{
 	
 	public void setMthumbd_Array(){
 		mThumbd = new Integer[Image_Count];
-		for( int i = 0 ; i < 1 ; i++ ){
+		for( int i = 0 ; i < Image_Count ; i++ ){
 			mThumbd[i] = i; 
 		}
-		Log.d("Array 0", ""+mThumbd.length);
+		
+		//Log.d("Array 0", ""+mThumbd.length);
 	}
 	
 	
@@ -144,7 +160,7 @@ public class MarkedActivity extends Activity implements OnClickListener{
 			for (File file : filesFound) {
 				list.add(file.getName());
 				Image_Count++;
-				Log.d("File name :",file.getName());
+//				Log.d("Fi:",file.getName());
 			}
 		}
 		
@@ -157,13 +173,11 @@ public class MarkedActivity extends Activity implements OnClickListener{
 			if(i == position){
 				return image;
 			}
+			i++;
 		}
 		return null;
 	}
 
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		
+	
 	}
-}
+

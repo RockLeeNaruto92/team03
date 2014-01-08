@@ -3,11 +3,14 @@
  */
 package com.example.photosound;
 
+import java.io.File;
 import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -49,13 +52,18 @@ public class MyImageAdapter extends BaseAdapter {
 	public void setListImage(List<String> list) {
 		this.ImageList = list;
 	}
-
+	public void viewList(){
+		for(String l : ImageList){
+			Log.d("name :",l);
+		}
+	}
 	public String getImagename(Integer position) {
 		int i = 0;
 		for (String image : ImageList) {
 			if (i == position) {
 				return image;
 			}
+			i++;
 		}
 		return null;
 	}
@@ -63,7 +71,9 @@ public class MyImageAdapter extends BaseAdapter {
 	/**
 	 * Cần override lại hàm này để hiển thị hình ảnh
 	 */
+	
 	public View getView(int arg0, View convertView, ViewGroup arg2) {
+		viewList();
 		ImageView imgView;
 		if(convertView==null){
 			imgView=new ImageView(mContext);
@@ -74,11 +84,12 @@ public class MyImageAdapter extends BaseAdapter {
 		}else{
 			imgView=(ImageView) convertView;
 		}
-		//lấy đúng vị trí hình ảnh được chọn
+		
 		//gán lại ImageResource
 //		imgView.setImageResource(mThumbIds[arg0]);
 		String imgPath = getImagename(mThumbIds[arg0]);
-		Bitmap bmp = BitmapFactory.decodeFile(imgPath);
+		Bitmap bmp = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"PhotoSound"+File.separator+imgPath);
+		Log.d("File name", imgPath);
 		imgView.setImageBitmap(bmp);
 		return imgView;
 	}
