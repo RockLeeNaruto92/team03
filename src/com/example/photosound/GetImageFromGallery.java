@@ -22,7 +22,7 @@ public class GetImageFromGallery extends Activity {
 
     private String selectedImagePath;
     private ImageView img;
-    private ImageButton Other , Record;
+    private ImageButton Other ;
     
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,6 @@ public class GetImageFromGallery extends Activity {
    
         img = (ImageView)findViewById(R.id.imageView2);
         Other = (ImageButton) findViewById(R.id.BtnGetOther);
-        Record= (ImageButton )findViewById(R.id.BtnRecord);
      
         DisplayMetrics displayMetric = getResources().getDisplayMetrics();
 		int imgWidth = Math.round(displayMetric.widthPixels*0.9f);
@@ -47,20 +46,10 @@ public class GetImageFromGallery extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				GetImageFromGallery();
-				Record.setVisibility(View.VISIBLE);
 			}
 		});
        
-        Record.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(GetImageFromGallery.this, DienClass.class);
-				intent.putExtra("imgPath", selectedImagePath);
-				startActivity(intent);
-			}
-		});
+       
         
         GetImageFromGallery();
                 
@@ -87,7 +76,12 @@ public class GetImageFromGallery extends Activity {
                 Uri selectedImageUri = data.getData();
                 selectedImagePath = getPath(selectedImageUri);
                 System.out.println("Image Path : " + selectedImagePath);
-                img.setImageURI(selectedImageUri);
+                
+                Intent intent = new Intent(GetImageFromGallery.this, PictureActivity.class);
+				intent.putExtra("BitmapImage", selectedImagePath);
+				intent.putExtra("fromGallery", true);
+				startActivity(intent);
+				finish();
             }
         }
     }
