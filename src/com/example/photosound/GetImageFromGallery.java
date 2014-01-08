@@ -1,5 +1,5 @@
 /*
- * @author Pham Tran Huynh
+ * @author 3C Pham Tran Huynh
  */
 package com.example.photosound;
 

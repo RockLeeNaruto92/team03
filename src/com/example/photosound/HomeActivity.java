@@ -1,5 +1,5 @@
 /**
- * @author Pham Tran Huynh
+ * @author 3C Pham Tran Huynh
  */
 package com.example.photosound;
 
@@ -26,6 +26,7 @@ public class HomeActivity extends Activity {
 		TakePhoto = (ImageButton) findViewById(R.id.BtnTakePicture);
 		Gallery   = (ImageButton) findViewById(R.id.BtnGetImageFrom);
 		image     = (ImageView) findViewById(R.id.App_Icon);
+		
 		DisplayMetrics displayMetric = getResources().getDisplayMetrics();
 		int buttonWidth = Math.round(displayMetric.widthPixels*0.25f);
 		int buttonHeight = Math.round(displayMetric.heightPixels*0.1f);

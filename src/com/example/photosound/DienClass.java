@@ -23,8 +23,6 @@ public class DienClass extends Activity{
 	        String j =(String) b.get("imgPath");
 	        Textv.setText(j);
 	    }
-
-
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

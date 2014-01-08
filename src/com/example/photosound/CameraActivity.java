@@ -140,14 +140,13 @@ public class CameraActivity extends Activity {
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Record.setVisibility(View.VISIBLE);
 
-		Log.v(TAG, "Result  :" + resultCode);
 		
 		if (resultCode == RESULT_CANCELED)
 			return;
 
 		Uri fileName = data.getData();
+		Log.v(TAG, "Result  :" + resultCode+fileName.getPath());
 
 		Bitmap bmp = null;
 		try {
@@ -159,7 +158,7 @@ public class CameraActivity extends Activity {
 
 			if (bmp != null) {
 				bmp = rotateBitmap(bmp, fileName);
-				imageView.setImageBitmap(bmp);
+				//imageView.setImageBitmap(bmp);
 			}
 		} catch (Exception e) {
 			Log.e("decode", "" + e.getMessage());
@@ -201,6 +200,7 @@ public class CameraActivity extends Activity {
 			Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
 			return;
 		}
+		
 		Intent intent = new Intent(CameraActivity.this,
 				PictureActivity.class);
 		intent.putExtra("BitmapImage", Environment

@@ -1,5 +1,5 @@
 /**
- * @author buiminhthuk55
+ * @author 3A Bui Minh Thu
  */
 
 package com.example.photosound;
@@ -18,12 +18,12 @@ public class AppUtils {
 	 * 
 	 * @param msg
 	 */
-	public static void logString(String msg){
+	public static void logString(String msg) {
 		Log.d(AppConst.TAG, msg);
 	}
-	
+
 	/**
-	 * @author buiminhthuk55
+	 * @author 3A Bui Minh Thu
 	 * @return
 	 */
 	public static String getTempFile() {
@@ -33,7 +33,7 @@ public class AppUtils {
 	}
 
 	/**
-	 * @author buiminhthuk55
+	 * @author 3A Bui Minh Thu
 	 */
 	public static void deleteTempFile() {
 		String filePath = getTempFile();
@@ -43,12 +43,12 @@ public class AppUtils {
 			file.delete();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param mp
 	 * @param filePath
-	 * @author buiminhthuk55
+	 * @author 3A Bui Minh Thu
 	 */
 	public static void playSong(MediaPlayer mp, String filePath) {
 		AppUtils.logString("playSong: " + filePath);
@@ -75,13 +75,13 @@ public class AppUtils {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param str
 	 * @param array
 	 * @return
-	 * @author buiminhthuk55
+	 * @author 3A Bui Minh Thu
 	 */
 	public static boolean compareBetweenStringAndByteArray(String str,
 			byte[] array) {
@@ -94,14 +94,14 @@ public class AppUtils {
 
 		return true;
 	}
-	
+
 	/**
 	 * 
 	 * @param str
 	 * @param file
 	 * @return
 	 * @throws IOException
-	 * @author buiminhthuk55
+	 * @author 3A Bui Minh Thu
 	 */
 
 	public static long getPositionOfStringInFile(String str,
@@ -109,10 +109,10 @@ public class AppUtils {
 		long position = file.length()
 				- AppConst.SEPERATOR_OF_IMG_AND_SOUND.length();
 		byte[] data = new byte[AppConst.SEPERATOR_OF_IMG_AND_SOUND.length()];
-		
+
 		while (position >= 0) {
 			file.seek(position);
-			if ((char)file.readByte() == str.charAt(0)) {
+			if ((char) file.readByte() == str.charAt(0)) {
 				file.seek(position);
 				file.read(data, 0, AppConst.SEPERATOR_OF_IMG_AND_SOUND.length());
 				if (AppUtils.compareBetweenStringAndByteArray(
@@ -124,35 +124,38 @@ public class AppUtils {
 
 		return position;
 	}
-	
+
 	/**
 	 * 
 	 * @param imgFile
 	 * @param position
 	 * @throws IOException
-	 * @author buiminhthuk55
+	 * @author 3A Bui Minh Thu
 	 */
-	public static void createMp3TempFileFromImgFile(RandomAccessFile imgFile, long position) throws IOException{
+	public static void createMp3TempFileFromImgFile(RandomAccessFile imgFile,
+			long position) throws IOException {
 		File file = new File(AppUtils.getTempFile());
-		if (file.exists()) file.delete();
-		
-		RandomAccessFile tempFile = new RandomAccessFile(AppUtils.getTempFile(), "rw");
+		if (file.exists())
+			file.delete();
+
+		RandomAccessFile tempFile = new RandomAccessFile(
+				AppUtils.getTempFile(), "rw");
 		byte[] data = new byte[AppConst.DATA_LENGTH];
 		int byteRead;
-		
+
 		imgFile.seek(position);
-		while ((byteRead = imgFile.read(data)) != -1){
+		while ((byteRead = imgFile.read(data)) != -1) {
 			tempFile.write(data, 0, byteRead);
 		}
-		
+
 		tempFile.close();
 	}
-	
+
 	/**
 	 * 
 	 * @param imgPath
 	 * @param mp3Path
-	 * @author buiminhthuk55
+	 * @author 3A Bui Minh Thu
 	 */
 	public static void writeMp3ToEndOfImage(String imgPath, String mp3Path) {
 		RandomAccessFile imgFile, mp3File;
@@ -164,7 +167,7 @@ public class AppUtils {
 		try {
 			imgFile = new RandomAccessFile(imgPath, "rw");
 			mp3File = new RandomAccessFile(mp3Path, "r");
-
+			
 			imgFile.seek(imgFile.length() - 1);
 
 			imgFile.writeBytes(AppConst.SEPERATOR_OF_IMG_AND_SOUND);
@@ -189,12 +192,76 @@ public class AppUtils {
 		Log.d(AppConst.TAG, "add mp3 to jpg complete");
 	}
 
-	public static void createImageFolderIfNotExist(){
+	/**
+	 * @author 3A Bui Minh Thu
+	 */
+	public static void createImageFolderIfNotExist() {
 		String rootPath = Environment.getExternalStorageDirectory().getPath();
 		File file = new File(rootPath, AppConst.IMAGE_FOLDER);
 
 		if (!file.exists()) {
 			file.mkdirs();
+		}
+	}
+	/**
+	 * 
+	 * @param fileName
+	 * @return
+	 */
+	public static String getFilePath(String fileName) {
+		return Environment.getExternalStorageDirectory().getAbsolutePath()
+				+ "/" + fileName;
+	}
+	
+	/**
+	 * @author 3A Bui Minh Thu
+	 * @return
+	 */
+	public static String getDefaultFileName(){
+		String headFileName = AppUtils.getFilePath(AppConst.IMAGE_FOLDER + "/"
+				+ AppConst.IMAGE_DEFAULT_NAME_HEADER);
+		String filename = null;
+
+		try {
+			RandomAccessFile cfile = new RandomAccessFile(
+					AppUtils.getFilePath(AppConst.IMAGE_FOLDER) + "/"
+							+ AppConst.COUNT_FILE, "rw");
+			int count = cfile.readInt();
+
+			filename = headFileName + count + AppConst.IMAGE_EXTENDS;
+			
+			logString("filename: " + filename);
+			cfile.seek(0);
+			cfile.writeInt(count + 1);	
+			cfile.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return filename;	}
+	
+	/**
+	 * 
+	 * @param srcPath
+	 * @param dstPath
+	 */
+	public static void copyFile(String srcPath, String dstPath) {
+		try {
+
+			File afile = new File(srcPath);
+
+			if (afile.renameTo(new File(dstPath))) {
+				AppUtils.logString("Move success!");
+			} else {
+				AppUtils.logString("Move failed");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

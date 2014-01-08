@@ -1,8 +1,12 @@
+/**
+ * @author 3B Dang Dinh Dien
+ */
 package com.example.photosound;
  
 import java.io.File;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,13 +20,14 @@ import android.view.View.OnTouchListener;
 import android.vn.R;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Toast;
  
 public class PictureSoundActivity extends Activity {
  
     private Button buttonPlayStop;
     private MediaPlayer mediaPlayer;
     private SeekBar seekBar;
-    
+    private String imgPath =null;
     private final Handler handler = new Handler();
  
     // Here i override onCreate method.
@@ -35,10 +40,24 @@ public class PictureSoundActivity extends Activity {
     public void onCreate(Bundle icicle) {
             super.onCreate(icicle);
             setContentView(R.layout.activity_picture_sound);
-            initViews();  
- 
+           getImagePath();
+            
+    	    //initViews(); 
     }
- 
+    /**
+     * @author huynh
+     */
+    public void getImagePath(){
+
+        Intent intent = getIntent();
+	    Bundle b = intent.getExtras();
+	    if(b!=null)
+	    {
+	        imgPath =(String) b.get("BitmapImage");
+            Toast.makeText(this, imgPath, Toast.LENGTH_SHORT).show();
+
+	    }
+    }
     // This method set the setOnClickListener and method for it (buttonClick())
     private void initViews() {
         buttonPlayStop = (Button) findViewById(R.id.ButtonPlayStop);
