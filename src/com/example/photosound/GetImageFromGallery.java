@@ -28,26 +28,7 @@ public class GetImageFromGallery extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
    
-        img = (ImageView)findViewById(R.id.imageView2);
-        Other = (ImageButton) findViewById(R.id.BtnGetOther);
-     
-        DisplayMetrics displayMetric = getResources().getDisplayMetrics();
-		int imgWidth = Math.round(displayMetric.widthPixels*0.9f);
-		int imgHeight = Math.round(displayMetric.heightPixels*0.7f);
-        android.widget.RelativeLayout.LayoutParams param = (android.widget.RelativeLayout.LayoutParams)img.getLayoutParams();
-		param.width = imgWidth;
-		param.height = imgHeight;
-        img.setLayoutParams(param);
-		
-		
-        Other.setOnClickListener(new ImageButton.OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				GetImageFromGallery();
-			}
-		});
+       
        
        
         

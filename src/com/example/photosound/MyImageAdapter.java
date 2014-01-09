@@ -92,11 +92,14 @@ public class MyImageAdapter extends BaseAdapter {
 		// imgView.setImageResource(mThumbIds[arg0]);
 		String imgPath = getImagename(mThumbIds[arg0]);
 		Options option = new Options();
-		option.inSampleSize = 2;
+		option.inSampleSize = 4;
+		
 		Bitmap bmp = BitmapFactory.decodeFile(Environment
 				.getExternalStorageDirectory().getAbsolutePath()
-				+ File.separator + AppConst.IMAGE_FOLDER + File.separator + imgPath,
-				option);
+				+ File.separator
+				+ AppConst.IMAGE_FOLDER
+				+ File.separator
+				+ imgPath, option);
 		Log.d("File name", imgPath);
 		imgView.setImageBitmap(bmp);
 		return imgView;

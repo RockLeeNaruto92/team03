@@ -72,48 +72,56 @@ public class MarkedActivity extends Activity implements OnItemClickListener {
 	}
 
 	public void myAction(int posistion) {
-		setContentView(R.layout.solo_picture);
-		BtnPlay = (ImageButton) findViewById(R.id.Play);
-		tvSoloMsg = (TextView) findViewById(R.id.tvSoloMsg);
-		tvSoloMsg.setText("Image name " + getImagename(mThumbd[posistion]));
-		ivSoloPicture = (ImageView) findViewById(R.id.imgSolo);
-
+		// BtnPlay = (ImageButton) findViewById(R.id.Play);
+		// tvSoloMsg = (TextView) findViewById(R.id.tvSoloMsg);
+		// tvSoloMsg.setText("Image name " + getImagename(mThumbd[posistion]));
+		// ivSoloPicture = (ImageView) findViewById(R.id.imgSolo);
+		//
 		final String imgPath = getImagename(mThumbd[posistion]);
-		Options option = new Options();
-		option.inSampleSize = 2;
-		Bitmap bmp = BitmapFactory.decodeFile(Environment
-				.getExternalStorageDirectory().getAbsolutePath()
-				+ File.separator
-				+ AppConst.IMAGE_FOLDER
-				+ File.separator
-				+ imgPath, option);
-		ivSoloPicture.setImageBitmap(bmp);
+		// Options option = new Options();
+		// option.inSampleSize = 2;
+		// Bitmap bmp = BitmapFactory.decodeFile(Environment
+		// .getExternalStorageDirectory().getAbsolutePath()
+		// + File.separator
+		// + AppConst.IMAGE_FOLDER
+		// + File.separator
+		// + imgPath, option);
+		// ivSoloPicture.setImageBitmap(bmp);
+		//
+		// btnBack = (Button) findViewById(R.id.btnBack);
+		//
+		// btnBack.setOnClickListener(new View.OnClickListener() {
+		// public void onClick(View arg0) {
+		// onCreate(myBackupBunder);
+		// }
+		// });
 
-		btnBack = (Button) findViewById(R.id.btnBack);
+		// BtnPlay.setOnClickListener(new View.OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// // TODO Auto-generated method stub
+		// Intent intent = new Intent(MarkedActivity.this,
+		// PictureActivity.class);
+		// intent.putExtra("BitmapImage", Environment
+		// .getExternalStorageDirectory().getAbsolutePath()
+		// + File.separator
+		// + AppConst.IMAGE_FOLDER
+		// + File.separator
+		// + imgPath);
+		// startActivity(intent);
+		// }
+		// });
 
-		btnBack.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View arg0) {
-				onCreate(myBackupBunder);
-			}
-		});
-
-		BtnPlay.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(MarkedActivity.this,
-						PictureSoundActivity.class);
-				intent.putExtra("BitmapImage", Environment
-						.getExternalStorageDirectory().getAbsolutePath()
-						+ File.separator
-						+ "PhotoSound"
-						+ File.separator
-						+ imgPath);
-				startActivity(intent);
-			}
-		});
-
+		Intent intent = new Intent(MarkedActivity.this, PictureActivity.class);
+		intent.putExtra(
+				"BitmapImage",
+				AppUtils.getFilePath(AppConst.IMAGE_FOLDER + File.separator
+						+ imgPath));
+		AppUtils.logString(AppUtils.getFilePath(AppConst.IMAGE_FOLDER + File.separator
+						+ imgPath));
+		startActivity(intent);
+		finish();
 	}
 
 	public void setAllImageList() {

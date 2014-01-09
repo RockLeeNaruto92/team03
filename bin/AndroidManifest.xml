@@ -52,10 +52,8 @@
         </activity>
         <activity android:name="com.example.photosound.PictureSoundActivity" >
         </activity>
-        <activity
-            android:name="com.example.photosound.PlayListActivity"
-            android:label="Select picture" >
-        </activity>
+        <activity android:name="com.example.photosound.PlayListActivity"
+            ></activity>
     </application>
 
 </manifest>

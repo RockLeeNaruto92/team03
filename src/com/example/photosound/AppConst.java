@@ -12,4 +12,6 @@ public class AppConst {
 	public static String IMAGE_EXTENDS = ".jpg";
 	public static String COUNT_FILE = "pt.dat";
 	public static int DATA_LENGTH = 4096;
+	
+	public static int CHOOSE_SOUND_REQUEST = 0;
 }

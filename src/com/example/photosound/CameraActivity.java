@@ -207,6 +207,7 @@ public class CameraActivity extends Activity {
 				.getExternalStorageDirectory().getAbsolutePath()
 				+ File.separator + "rotate.jpg");
 		intent.putExtra("fromGallery", false);
+		AppUtils.logString("putextras");
 		startActivity(intent);
 		finish();
 	}

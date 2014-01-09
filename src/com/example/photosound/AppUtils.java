@@ -6,8 +6,10 @@ package com.example.photosound;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 
 import android.media.MediaPlayer;
 import android.os.Environment;
@@ -150,6 +152,40 @@ public class AppUtils {
 
 		tempFile.close();
 	}
+	
+	/**
+	 * @author 3A Bui Minh Thu 
+	 * @param imgPath
+	 * @param mp3Path
+	 * @param rewrite
+	 */
+	public static void writeMp3ToEndOfImage(String imgPath, String mp3Path,
+			boolean rewrite) {
+		long position;
+
+		if (rewrite) {
+			try {
+				RandomAccessFile file = new RandomAccessFile(imgPath, "rw");
+				File nFile = new File(imgPath);
+				FileChannel out = new FileOutputStream(nFile, true)
+						.getChannel();
+				position = AppUtils.getPositionOfStringInFile(
+						AppConst.SEPERATOR_OF_IMG_AND_SOUND, file);
+				AppUtils.logString("position: " + position);
+				out.truncate(position + 1);
+				file.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		writeMp3ToEndOfImage(imgPath, mp3Path);
+	}
+
 
 	/**
 	 * 

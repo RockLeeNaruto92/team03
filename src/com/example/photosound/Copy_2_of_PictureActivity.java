@@ -12,13 +12,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
@@ -35,7 +33,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-public class PictureActivity extends Activity {
+public class Copy_2_of_PictureActivity extends Activity {
 	/*
 	 * @author: 3B Dang Dinh Dien
 	 */
@@ -51,14 +49,9 @@ public class PictureActivity extends Activity {
 	private MediaRecorder recorder;
 
 	private String imagePath;
-	private String soundPath;
 	private boolean isRecording = false;
 	private boolean isPlaying = false;
 	private boolean hadSound;
-	private int processValue;
-	private int count;
-
-	private long position;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,34 +62,6 @@ public class PictureActivity extends Activity {
 		getImagePath();
 
 		setBitmapToImageView(image, imagePath);
-
-		RandomAccessFile file;
-		try {
-			file = new RandomAccessFile(imagePath, "rw");
-			position = AppUtils.getPositionOfStringInFile(
-					AppConst.SEPERATOR_OF_IMG_AND_SOUND, file);
-
-			if (position == -1) {
-				hadSound = false;
-			} else {
-				hadSound = true;
-				playBtn.setEnabled(true);
-				playBtn.setBackgroundResource(R.drawable.playbtn3);
-
-				AppUtils.createMp3TempFileFromImgFile(file, position
-						+ AppConst.SEPERATOR_OF_IMG_AND_SOUND.length());
-
-				soundPath = AppUtils.getFilePath(AppConst.MP3_TEMP_FILE);
-
-			}
-			file.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		/*
 		 * File file = new File(imagePath); if (file.exists()) Log.d("APP",
@@ -155,9 +120,7 @@ public class PictureActivity extends Activity {
 	private void setBitmapToImageView(ImageView image, String imagePath) {
 		// TODO Auto-generated method stub
 		Bitmap bitmap;
-		Options option = new Options();
-		option.inSampleSize = 2;
-		bitmap = BitmapFactory.decodeFile(imagePath, option);
+		bitmap = BitmapFactory.decodeFile(imagePath);
 
 		image.setImageBitmap(bitmap);
 	}
@@ -183,7 +146,7 @@ public class PictureActivity extends Activity {
 		param.width = imgWidth;
 		param.height = imgHeight;
 		image.setLayoutParams(param);
-
+		
 		setOnButtonClick();
 	}
 
@@ -217,9 +180,9 @@ public class PictureActivity extends Activity {
 				onSaveBtnClick(saveBtn);
 			}
 		});
-
+		
 		chooseSoundBtn.setOnClickListener(new OnClickListener() {
-
+			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -234,7 +197,7 @@ public class PictureActivity extends Activity {
 	public void onChooseSoundBtnClick(Button chooseSoundBtn) {
 		// TODO Auto-generated method stub
 		Intent i = new Intent(getApplicationContext(), PlayListActivity.class);
-		startActivityForResult(i, AppConst.CHOOSE_SOUND_REQUEST);
+		startActivity(i);
 	}
 
 	/**
@@ -242,7 +205,7 @@ public class PictureActivity extends Activity {
 	 * @author 3B Dang Dinh Dien
 	 * @param view
 	 */
-	public void onRecordBtnClick(View view) {
+	public void onRecordBtnClick(View view) {		
 		if (!isRecording) {
 			AppUtils.logString("start record");
 			AppUtils.deleteTempFile();
@@ -251,27 +214,27 @@ public class PictureActivity extends Activity {
 			recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 			recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
 			recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-			soundPath = AppUtils.getTempFile();
-			recorder.setOutputFile(soundPath);
-
-			if (chronometer.getVisibility() != View.VISIBLE) {
+			AppUtils.logString("tempFile: " + AppUtils.getTempFile());
+			recorder.setOutputFile(AppUtils.getTempFile());
+			
+			if (chronometer.getVisibility() != View.VISIBLE){
 				seekBar.setVisibility(View.GONE);
 				chronometer.setVisibility(View.VISIBLE);
 			}
-
+			
 			playBtn.setBackgroundResource(R.drawable.playbtn3_disable);
 			playBtn.setEnabled(false);
-
+			
 			saveBtn.setBackgroundResource(R.drawable.save_disable);
 			saveBtn.setEnabled(false);
-
-			chooseSoundBtn
-					.setBackgroundResource(R.drawable.folder_sound2_disable);
+			
+			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2_disable);
 			chooseSoundBtn.setEnabled(false);
+			
 
 			recordBtn.setBackgroundResource(R.drawable.stopbtn);
 			chronometer.setVisibility(View.VISIBLE);
-			chronometer.setBase(SystemClock.elapsedRealtime());
+			chronometer.setBase(SystemClock.elapsedRealtime());			
 			chronometer.start();
 
 			try {
@@ -289,17 +252,16 @@ public class PictureActivity extends Activity {
 
 		} else {
 			recordBtn.setBackgroundResource(R.drawable.microphone1);
-			count = 0;
-			processValue = 0;
+			
 			playBtn.setEnabled(true);
 			playBtn.setBackgroundResource(R.drawable.playbtn3);
-
+			
 			chooseSoundBtn.setEnabled(true);
 			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2);
-
+			
 			saveBtn.setEnabled(true);
 			saveBtn.setBackgroundResource(R.drawable.save2);
-
+			
 			chronometer.stop();
 			// Stop and free recorder
 			recorder.stop();
@@ -321,18 +283,11 @@ public class PictureActivity extends Activity {
 		AppUtils.copyFile(imagePath, filename);
 
 		// write temp mp3 sound data to end of image
-		if (hadSound) {
-			AppUtils.writeMp3ToEndOfImage(filename, soundPath, true);
-		} else {
-			AppUtils.writeMp3ToEndOfImage(filename, soundPath, false);
-		}
+		AppUtils.writeMp3ToEndOfImage(filename, AppUtils.getTempFile());
 		AppUtils.logString("filename: " + filename);
 		// delete temp mp3 file
 		AppUtils.deleteTempFile();
 		AppUtils.logString("deleted mp3 tempFile");
-
-		Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG)
-				.show();
 
 		Intent i = new Intent(getApplicationContext(), MarkedActivity.class);
 		startActivity(i);
@@ -356,7 +311,6 @@ public class PictureActivity extends Activity {
 	public void onPlayBtnClick(View view) {
 
 		AppUtils.logString("Play click");
-
 		if (isPlaying == false) {
 			isPlaying = true;
 			playBtn.setBackgroundResource(R.drawable.pausebtn);
@@ -364,52 +318,49 @@ public class PictureActivity extends Activity {
 				seekBar.setVisibility(View.VISIBLE);
 				chronometer.setVisibility(View.GONE);
 			}
-			Log.d("count", count + "");
-			if (count == 0) {
-				count++;
-				File file = new File(soundPath);
-				Uri uri = Uri.fromFile(file);
-				mp = MediaPlayer.create(this, uri);
-				seekBar.setMax(mp.getDuration());
-				seekBar.setOnTouchListener(new OnTouchListener() {
-					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-						seekChange(v);
-						return false;
-					}
-				});
-			}
 
-			// mp.seekTo(seekBar.getProgress());
-			mp.start();
-			// AppUtils.playSong(mp, soundPath);
-			startPlayProgressUpdater();
-
+			File file = new File(AppUtils.getTempFile());
+			Uri uri = Uri.fromFile(file);
+			mp = MediaPlayer.create(this, uri);
+			AppUtils.playSong(mp, AppUtils.getTempFile());
+			seekBar.setMax(mp.getDuration());
+			seekBar.setOnTouchListener(new OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					seekChange(v);
+					return false;
+				}
+			});
+			
 			recordBtn.setEnabled(false);
 			recordBtn.setBackgroundResource(R.drawable.recordbtn_disable);
-
+			
 			chooseSoundBtn.setEnabled(false);
-			chooseSoundBtn
-					.setBackgroundResource(R.drawable.folder_sound2_disable);
-
+			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2_disable);
+			
 			saveBtn.setEnabled(false);
 			saveBtn.setBackgroundResource(R.drawable.save_disable);
 
+			try {
+				mp.seekTo(seekBar.getProgress());
+				mp.start();
+				startPlayProgressUpdater();
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			}
 		} else {
-			seekBar.setProgress(mp.getCurrentPosition());
 			isPlaying = false;
-			processValue = seekBar.getProgress();
 			playBtn.setBackgroundResource(R.drawable.playbtn3);
 			saveBtn.setEnabled(true);
 			chooseSoundBtn.setEnabled(true);
 			recordBtn.setEnabled(true);
-
+			
 			saveBtn.setBackgroundResource(R.drawable.save2);
 			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2);
 			recordBtn.setBackgroundResource(R.drawable.recordbtn);
+			
 			mp.pause();
 		}
-
 	}
 
 	/**
@@ -429,14 +380,15 @@ public class PictureActivity extends Activity {
 			mp.pause();
 			playBtn.setBackgroundResource(R.drawable.playbtn3);
 			seekBar.setProgress(0);
-
+			
 			saveBtn.setEnabled(true);
 			chooseSoundBtn.setEnabled(true);
 			recordBtn.setEnabled(true);
-
+			
 			saveBtn.setBackgroundResource(R.drawable.save2);
 			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2);
 			recordBtn.setBackgroundResource(R.drawable.recordbtn);
+			
 		}
 	}
 
@@ -451,36 +403,21 @@ public class PictureActivity extends Activity {
 		}
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
+	/**
+	 * @author 3A Bui Minh Thu
+	 */
+	public void playSound() {
+		Toast.makeText(this, "onClick", Toast.LENGTH_SHORT).show();
 
-		if (requestCode == AppConst.CHOOSE_SOUND_REQUEST) {
-			if (resultCode == RESULT_OK) {
-				soundPath = data.getExtras().getString("soundPath");
-				AppUtils.logString("sound path:" + soundPath);
-				count = 0;
-				processValue = 0;
+		if (!mp.isPlaying()) {
+			if (mp != null) {
+				
+				//File file=new File(AppUtils.getTempFile());
+				//Uri uri = Uri.fromFile(file);
+				//mp = MediaPlayer.create(this, uri);
+				AppUtils.playSong(mp, AppUtils.getTempFile());
 			}
 		}
-	}
-
-	public void share(View v) {
-		Intent share = new Intent(Intent.ACTION_SEND);
-
-		share.setType("image/jpg");
-
-//		String imagePath = Environment
-//				.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-//				+ "/result.png";
-
-		File imageFileToShare = new File(imagePath);
-
-		Uri uri = Uri.fromFile(imageFileToShare);
-		share.putExtra(Intent.EXTRA_STREAM, uri);
-
-		startActivity(Intent.createChooser(share, "Share Image!"));
 	}
 
 }

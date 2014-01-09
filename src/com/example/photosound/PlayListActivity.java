@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -58,13 +59,14 @@ public class PlayListActivity extends ListActivity {
 				
 				Log.d("TAG", "position " + position);
 				// Starting new intent
-//				Intent in = new Intent(getApplicationContext(),
-//						MainActivity.class);
+				Intent in = new Intent(PlayListActivity.this,
+						PictureActivity.class);
 				// Sending songIndex to PlayerActivity
-//				in.putExtra("songIndex", songIndex);
-//				setResult(100, in);
+				in.putExtra("soundPath", songsList.get(position).get("songPath"));
+				setResult(RESULT_OK, in);
+				
 				// Closing PlayListView
-//				finish();
+				finish();
 			}
 		});
 
