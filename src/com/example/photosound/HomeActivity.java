@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.vn.R;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -17,14 +17,14 @@ import android.app.Activity;
 import android.content.Intent;
 
 public class HomeActivity extends Activity {
-	private ImageButton TakePhoto , Gallery;
+	private Button TakePhoto , Gallery;
 	private ImageView image;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-		TakePhoto = (ImageButton) findViewById(R.id.BtnTakePicture);
-		Gallery   = (ImageButton) findViewById(R.id.BtnGetImageFrom);
+		TakePhoto = (Button) findViewById(R.id.BtnTakePicture);
+		Gallery   = (Button) findViewById(R.id.BtnGetImageFrom);
 		image     = (ImageView) findViewById(R.id.App_Icon);
 		
 		DisplayMetrics displayMetric = getResources().getDisplayMetrics();

@@ -2,16 +2,15 @@
  * @author 3B Dang Dinh Dien
  */
 package com.example.photosound;
- 
-import java.io.File;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,102 +18,178 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.vn.R;
 import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.Toast;
- 
+
 public class PictureSoundActivity extends Activity {
- 
-    private Button buttonPlayStop;
-    private MediaPlayer mediaPlayer;
-    private SeekBar seekBar;
-    private String imgPath =null;
-    private final Handler handler = new Handler();
- 
-    // Here i override onCreate method.
-    //
-    // setContentView() method set the layout that you will see then
-    // the application will starts
-    //
-    // initViews() method i create to init views components.
-    @Override
-    public void onCreate(Bundle icicle) {
-            super.onCreate(icicle);
-            setContentView(R.layout.activity_picture_sound);
-           getImagePath();
-            
-    	    //initViews(); 
-    }
-    /**
-     * @author huynh
-     */
-    public void getImagePath(){
+	/*
+	 * @author: 3B Dang Dinh Dien
+	 */
+	private ImageView image;
+	
+	private Button playBtn;	
+	private final Handler handler = new Handler();
+	private Chronometer chronometer;
+	private SeekBar seekBar;
+	private MediaPlayer mp;
 
-        Intent intent = getIntent();
-	    Bundle b = intent.getExtras();
-	    if(b!=null)
-	    {
-	        imgPath =(String) b.get("BitmapImage");
-            Toast.makeText(this, imgPath, Toast.LENGTH_SHORT).show();
+	private String imagePath;
+	
+	private boolean isPlaying = false;
+	
 
-	    }
-    }
-    // This method set the setOnClickListener and method for it (buttonClick())
-    private void initViews() {
-        buttonPlayStop = (Button) findViewById(R.id.ButtonPlayStop);
-        buttonPlayStop.setOnClickListener(new OnClickListener() {@Override public void onClick(View v) {buttonClick();}});
- 
-        //mediaPlayer = MediaPlayer.create(this, R);
-        Uri fileUri=Uri.fromFile(new File(Environment.getExternalStorageDirectory().getAbsoluteFile()+File.separator+"music.mp3"));
-        mediaPlayer = MediaPlayer.create(this, fileUri);
-        //mediaPlayer = MediaPlayer.
-        seekBar = (SeekBar) findViewById(R.id.SeekBar01);
-        seekBar.setMax(mediaPlayer.getDuration());
-        Log.d("maxsecond", Integer.toString(mediaPlayer.getDuration()));
-        seekBar.setOnTouchListener(new OnTouchListener() {@Override public boolean onTouch(View v, MotionEvent event) {
-                seekChange(v);
-                        return false; }
-                });
- 
-    }
-    
-    public void startPlayProgressUpdater() {
-            seekBar.setProgress(mediaPlayer.getCurrentPosition());
-            
-                if (mediaPlayer.isPlaying()) {
-                        Runnable notification = new Runnable() {
-                        public void run() {
-                                startPlayProgressUpdater();
-                                }
-                    };
-                    handler.postDelayed(notification,1000);
-            }else{
-                    mediaPlayer.pause();
-                    buttonPlayStop.setText(getString(R.string.play_str));
-                    seekBar.setProgress(0);
-            }
-    } 
- 
-    // This is event handler thumb moving event
-    private void seekChange(View v){
-            if(mediaPlayer.isPlaying()){
-                    SeekBar sb = (SeekBar)v;
-                        mediaPlayer.seekTo(sb.getProgress());
-                }
-    }
- 
-    // This is event handler for buttonClick event
-    private void buttonClick(){
-        if (buttonPlayStop.getText() == getString(R.string.play_str)) {
-            buttonPlayStop.setText(getString(R.string.pause_str));
-            try{
-                    mediaPlayer.start();
-                startPlayProgressUpdater(); 
-            }catch (IllegalStateException e) {
-                    mediaPlayer.pause();
-            }
-        }else {
-            buttonPlayStop.setText(getString(R.string.play_str));
-            mediaPlayer.pause();
-        }
-    }
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.activity_picture);
+
+		getView();
+		getImagePath();
+
+		setBitmapToImageView(image, imagePath);
+
+		/*
+		 * File file = new File(imagePath); if (file.exists()) Log.d("APP",
+		 * "file exist"); else Log.d("App", "!file exist");
+		 */
+	}
+
+	
+
+	/**
+	 * @author 3B Dang Dinh Dien
+	 */
+	private void getImagePath() {
+		// TODO Auto-generated method stub
+		// imagePath = Environment.getExternalStorageDirectory()
+		// .getAbsolutePath() + "/vd.jpg";
+		Intent iin = getIntent();
+		Bundle b = iin.getExtras();
+		if (b != null) {
+			imagePath = (String) b.get("BitmapImage");
+			AppUtils.logString("Image: " + imagePath);			
+		}
+
+	}
+
+	/**
+	 * @author 3B Dang Dinh Dien
+	 * @param imagePath
+	 */
+	private void setBitmapToImageView(ImageView image, String imagePath) {
+		// TODO Auto-generated method stub
+		Bitmap bitmap;
+		bitmap = BitmapFactory.decodeFile(imagePath);
+
+		image.setImageBitmap(bitmap);
+	}
+
+	/**
+	 * @author 3B Dang Dinh Dien	
+	 */
+	private void getView() {		
+		playBtn = (Button) findViewById(R.id.playBtn);		
+		chronometer = (Chronometer) findViewById(R.id.chronometer1);
+		seekBar = (SeekBar) findViewById(R.id.SeekBar01);
+
+		image = (ImageView) findViewById(R.id.imageView);
+		DisplayMetrics displayMetric = getResources().getDisplayMetrics();
+		int imgWidth = Math.round(displayMetric.widthPixels * 0.9f);
+		int imgHeight = Math.round(displayMetric.heightPixels * 0.5f);
+		// Layou param = (LayoutParams)imageView.getLayoutParams();
+		android.widget.RelativeLayout.LayoutParams param = (android.widget.RelativeLayout.LayoutParams) image
+				.getLayoutParams();
+		param.width = imgWidth;
+		param.height = imgHeight;
+		image.setLayoutParams(param);
+		setOnButtonClick();
+	}
+
+	/**
+	 * @author 3A Bui Minh Thu
+	 */
+	private void setOnButtonClick() {		
+		playBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				onPlayBtnClick(playBtn);
+			}
+		});
+
+	}
+
+	/**********************************************************/
+	/**** ON BUTTON CLICKED *****/
+	
+	
+
+	/**
+	 * @author 3B Dang Dinh Dien
+	 * @param view
+	 */
+	public void onPlayBtnClick(View view) {
+
+		AppUtils.logString("Play click");
+		if (isPlaying == false) {
+			isPlaying = true;
+			playBtn.setBackgroundResource(R.drawable.pause01);
+			AppUtils.playSong(mp, AppUtils.getTempFile());
+			seekBar.setMax(mp.getDuration());
+			seekBar.setOnTouchListener(new OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					seekChange(v);
+					return false;
+				}
+			});
+			seekBar.setVisibility(View.VISIBLE);
+			chronometer.setVisibility(View.GONE);			
+			
+			Log.d("maxsecond", Integer.toString(mp.getDuration()));			
+			try {
+				mp.start();
+				startPlayProgressUpdater();
+			} catch (IllegalStateException e) {
+				mp.pause();
+			}
+		} else {
+			isPlaying = false;
+			playBtn.setBackgroundResource(R.drawable.playicon1);			
+			mp.pause();
+		}
+	}
+	/**
+	 * @author 3B Dang Dinh Dien
+	 */
+	public void startPlayProgressUpdater() {
+		seekBar.setProgress(mp.getCurrentPosition());
+
+		if (mp.isPlaying()) {
+			Runnable notification = new Runnable() {
+				public void run() {
+					startPlayProgressUpdater();
+				}
+			};
+			handler.postDelayed(notification, 1000);
+		} else {
+			mp.pause();
+			playBtn.setBackgroundResource(R.drawable.playicon1);
+			seekBar.setProgress(0);			
+		}
+	}
+	/**
+	 * @author 3B Dang Dinh Dien
+	 */
+	// This is event handler thumb moving event
+	private void seekChange(View v) {
+		if (mp.isPlaying()) {
+			SeekBar sb = (SeekBar) v;
+			mp.seekTo(sb.getProgress());
+		}
+	}
+
+	
 }

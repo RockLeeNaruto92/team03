@@ -167,7 +167,7 @@ public class AppUtils {
 		try {
 			imgFile = new RandomAccessFile(imgPath, "rw");
 			mp3File = new RandomAccessFile(mp3Path, "r");
-			
+
 			imgFile.seek(imgFile.length() - 1);
 
 			imgFile.writeBytes(AppConst.SEPERATOR_OF_IMG_AND_SOUND);
@@ -203,6 +203,29 @@ public class AppUtils {
 			file.mkdirs();
 		}
 	}
+
+	/**
+	 * @author 3A Bui Minh Thu
+	 */
+	public static void createCountFileIfNotExist() {
+		File file = new File(getFilePath(AppConst.IMAGE_FOLDER + File.separator
+				+ AppConst.COUNT_FILE));
+
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+
+				RandomAccessFile nFile = new RandomAccessFile(file, "rw");
+				nFile.writeInt(0);
+				AppUtils.logString("Create count file");
+				nFile.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * 
 	 * @param fileName
@@ -212,12 +235,12 @@ public class AppUtils {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
 				+ "/" + fileName;
 	}
-	
+
 	/**
 	 * @author 3A Bui Minh Thu
 	 * @return
 	 */
-	public static String getDefaultFileName(){
+	public static String getDefaultFileName() {
 		String headFileName = AppUtils.getFilePath(AppConst.IMAGE_FOLDER + "/"
 				+ AppConst.IMAGE_DEFAULT_NAME_HEADER);
 		String filename = null;
@@ -229,10 +252,10 @@ public class AppUtils {
 			int count = cfile.readInt();
 
 			filename = headFileName + count + AppConst.IMAGE_EXTENDS;
-			
+
 			logString("filename: " + filename);
 			cfile.seek(0);
-			cfile.writeInt(count + 1);	
+			cfile.writeInt(count + 1);
 			cfile.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -242,8 +265,9 @@ public class AppUtils {
 			e.printStackTrace();
 		}
 
-		return filename;	}
-	
+		return filename;
+	}
+
 	/**
 	 * 
 	 * @param srcPath
@@ -264,4 +288,5 @@ public class AppUtils {
 			e.printStackTrace();
 		}
 	}
+
 }

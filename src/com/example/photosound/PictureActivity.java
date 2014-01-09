@@ -3,6 +3,7 @@
  */
 package com.example.photosound;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,16 +12,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.vn.R;
+import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -30,10 +38,11 @@ public class PictureActivity extends Activity {
 	 * @author: 3B Dang Dinh Dien
 	 */
 	private ImageView image;
-	private ImageButton recordBtn;
-	private ImageButton playBtn;
-	private ImageButton saveBtn;
-
+	private Button recordBtn;
+	private Button playBtn;
+	private Button saveBtn;
+	private Button chooseSoundBtn;
+	private final Handler handler = new Handler();
 	private Chronometer chronometer;
 	private SeekBar seekBar;
 	private MediaPlayer mp;
@@ -118,25 +127,27 @@ public class PictureActivity extends Activity {
 	}
 
 	/**
-	 * @author 3A Bui Minh Thu
+	 * @author 3B Dang Dinh Dien
 	 */
 	private void getView() {
-		recordBtn = (ImageButton) findViewById(R.id.recordBtn);
-		playBtn = (ImageButton) findViewById(R.id.playBtn);
-		saveBtn = (ImageButton) findViewById(R.id.saveBtn);
+		recordBtn = (Button) findViewById(R.id.recordBtn);
+		playBtn = (Button) findViewById(R.id.playBtn);
+		saveBtn = (Button) findViewById(R.id.saveBtn);
+		chooseSoundBtn = (Button) findViewById(R.id.chooseSoundBtn);
 		chronometer = (Chronometer) findViewById(R.id.chronometer1);
 		seekBar = (SeekBar) findViewById(R.id.SeekBar01);
 
 		image = (ImageView) findViewById(R.id.imageView);
 		DisplayMetrics displayMetric = getResources().getDisplayMetrics();
 		int imgWidth = Math.round(displayMetric.widthPixels * 0.9f);
-		int imgHeight = Math.round(displayMetric.heightPixels * 0.7f);
+		int imgHeight = Math.round(displayMetric.heightPixels * 0.5f);
 		// Layou param = (LayoutParams)imageView.getLayoutParams();
 		android.widget.RelativeLayout.LayoutParams param = (android.widget.RelativeLayout.LayoutParams) image
 				.getLayoutParams();
 		param.width = imgWidth;
 		param.height = imgHeight;
 		image.setLayoutParams(param);
+		
 		setOnButtonClick();
 	}
 
@@ -170,17 +181,32 @@ public class PictureActivity extends Activity {
 				onSaveBtnClick(saveBtn);
 			}
 		});
+		
+		chooseSoundBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				onChooseSoundBtnClick(chooseSoundBtn);
+			}
+		});
 
 	}
 
 	/**********************************************************/
 	/**** ON BUTTON CLICKED *****/
+	public void onChooseSoundBtnClick(Button chooseSoundBtn) {
+		// TODO Auto-generated method stub
+		Intent i = new Intent(getApplicationContext(), PlayListActivity.class);
+		startActivity(i);
+	}
 
 	/**
 	 * @author 3A Bui Minh Thu
+	 * @author 3B Dang Dinh Dien
 	 * @param view
 	 */
-	public void onRecordBtnClick(View view) {
+	public void onRecordBtnClick(View view) {		
 		if (!isRecording) {
 			AppUtils.logString("start record");
 			AppUtils.deleteTempFile();
@@ -198,9 +224,9 @@ public class PictureActivity extends Activity {
 				saveBtn.setVisibility(View.GONE);
 
 			}
-			recordBtn.setImageResource(R.drawable.stop_recordbtn);
+			recordBtn.setBackgroundResource(R.drawable.stopbtn);
 			chronometer.setVisibility(View.VISIBLE);
-			chronometer.setBase(SystemClock.elapsedRealtime());
+			chronometer.setBase(SystemClock.elapsedRealtime());			
 			chronometer.start();
 
 			try {
@@ -217,7 +243,7 @@ public class PictureActivity extends Activity {
 			}
 
 		} else {
-			recordBtn.setImageResource(R.drawable.microphone1);
+			recordBtn.setBackgroundResource(R.drawable.microphone1);
 			playBtn.setVisibility(View.VISIBLE);
 			saveBtn.setVisibility(View.VISIBLE);
 			chronometer.stop();
@@ -225,6 +251,7 @@ public class PictureActivity extends Activity {
 			recorder.stop();
 			recorder.release();
 			recorder = null;
+
 		}
 		isRecording = !isRecording;
 	}
@@ -262,7 +289,7 @@ public class PictureActivity extends Activity {
 	}
 
 	/**
-	 * @author 3A Bui Minh Thu
+	 * @author 3B Dang Dinh Dien
 	 * @param view
 	 */
 	public void onPlayBtnClick(View view) {
@@ -270,19 +297,72 @@ public class PictureActivity extends Activity {
 		AppUtils.logString("Play click");
 		if (isPlaying == false) {
 			isPlaying = true;
-			playBtn.setImageResource(R.drawable.pause01);
-
-			seekBar.setVisibility(View.VISIBLE);
+			playBtn.setBackgroundResource(R.drawable.pausebtn);
+			if (seekBar.getVisibility() == View.GONE) {
+				seekBar.setVisibility(View.VISIBLE);
+				File file=new File(AppUtils.getTempFile());
+				Uri uri = Uri.fromFile(file);
+				mp = MediaPlayer.create(this, uri);
+				AppUtils.playSong(mp, AppUtils.getTempFile());
+				seekBar.setMax(mp.getDuration());
+				seekBar.setOnTouchListener(new OnTouchListener() {
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						seekChange(v);
+						return false;
+					}
+				});
+			}
 			chronometer.setVisibility(View.GONE);
-			recordBtn.setEnabled(false);
-			saveBtn.setEnabled(false);
-
-			playSound();
+			recordBtn.setVisibility(View.GONE);
+			saveBtn.setVisibility(View.GONE);
+			Log.d("maxsecond", Integer.toString(mp.getDuration()));
+			try {
+				mp.seekTo(seekBar.getProgress());
+				mp.start();
+				startPlayProgressUpdater();
+			} catch (IllegalStateException e) {
+				mp.pause();
+			}
 		} else {
 			isPlaying = false;
-			playBtn.setImageResource(R.drawable.playicon1);
-			saveBtn.setEnabled(true);
-			recordBtn.setEnabled(true);
+			playBtn.setBackgroundResource(R.drawable.playbtn3);
+			saveBtn.setVisibility(View.VISIBLE);
+			recordBtn.setVisibility(View.VISIBLE);
+			mp.pause();
+		}
+	}
+
+	/**
+	 * @author 3B Dang Dinh Dien
+	 */
+	public void startPlayProgressUpdater() {
+		seekBar.setProgress(mp.getCurrentPosition());
+
+		if (mp.isPlaying()) {
+			Runnable notification = new Runnable() {
+				public void run() {
+					startPlayProgressUpdater();
+				}
+			};
+			handler.postDelayed(notification, 1000);
+		} else {
+			mp.pause();
+			playBtn.setBackgroundResource(R.drawable.playbtn3);
+			seekBar.setProgress(0);
+			saveBtn.setVisibility(View.VISIBLE);
+			recordBtn.setVisibility(View.VISIBLE);
+		}
+	}
+
+	/**
+	 * @author 3B Dang Dinh Dien
+	 */
+	// This is event handler thumb moving event
+	private void seekChange(View v) {
+		if (mp.isPlaying()) {
+			SeekBar sb = (SeekBar) v;
+			mp.seekTo(sb.getProgress());
 		}
 	}
 
@@ -294,6 +374,10 @@ public class PictureActivity extends Activity {
 
 		if (!mp.isPlaying()) {
 			if (mp != null) {
+				
+				//File file=new File(AppUtils.getTempFile());
+				//Uri uri = Uri.fromFile(file);
+				//mp = MediaPlayer.create(this, uri);
 				AppUtils.playSong(mp, AppUtils.getTempFile());
 			}
 		}
