@@ -81,7 +81,7 @@ public class MyImageAdapter extends BaseAdapter {
 		if (convertView == null) {
 			imgView = new ImageView(mContext);
 			// can chỉnh lại hình cho đẹp
-			imgView.setLayoutParams(new GridView.LayoutParams(85, 85));
+			imgView.setLayoutParams(new GridView.LayoutParams(200, 200));
 			imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			imgView.setPadding(8, 8, 8, 8);
 		} else {

@@ -7,10 +7,12 @@ package com.example.photosound;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.vn.R;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
 
 
 public class MainActivity extends TabActivity {
@@ -24,7 +26,6 @@ public class MainActivity extends TabActivity {
 		AppUtils.createCountFileIfNotExist();
 
 		TabHost tabHost = getTabHost();
-
 		//Khởi tạo tab hình ảnh
 		TabSpec photospec = tabHost.newTabSpec("HinhAnh");
 		//Thiết lập tên tab hiển thị và icon
@@ -40,14 +41,18 @@ public class MainActivity extends TabActivity {
 		songspec.setContent(songsIntent);
 
 		//Khởi tạo tab xem phim
-		TabSpec videospec = tabHost.newTabSpec("XemPhim");
-		videospec.setIndicator("", getResources().getDrawable(R.drawable.icon_videos_tab));
-		Intent videosIntent = new Intent(this, ProfileActivity.class);
-		videospec.setContent(videosIntent);
+//		TabSpec videospec = tabHost.newTabSpec("XemPhim");
+//		videospec.setIndicator("", getResources().getDrawable(R.drawable.icon_videos_tab));
+//		Intent videosIntent = new Intent(this, ProfileActivity.class);
+//		videospec.setContent(videosIntent);
 
 		//Thêm các TabSpec trên vào TabHost
 		tabHost.addTab(photospec); //Thêm tab hình ảnh
 		tabHost.addTab(songspec); //Thêm tab nghe nhạc
-		tabHost.addTab(videospec); //Thêm tab xem phim
+		tabHost.getTabWidget().getChildAt(0).setBackgroundColor(Color.DKGRAY);
+
+		tabHost.getTabWidget().getChildAt(1).setBackgroundColor(Color.DKGRAY);
+		
+//.addTab(videospec); //Thêm tab xem phim
 	}
 }

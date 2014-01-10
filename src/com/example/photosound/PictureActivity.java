@@ -106,7 +106,7 @@ public class PictureActivity extends Activity {
 		// getImagePath();
 
 		// setBitmapToImageView(image, imagePath);
-		if (fromCamera)
+		if (fromCamera || fromGallery)
 			return;
 
 		RandomAccessFile file;
@@ -120,7 +120,7 @@ public class PictureActivity extends Activity {
 			} else {
 				hadSound = true;
 				playBtn.setEnabled(true);
-				playBtn.setBackgroundResource(R.drawable.playbtn3);
+				playBtn.setBackgroundResource(R.drawable.play_button1);
 
 				AppUtils.createMp3TempFileFromImgFile(file, position
 						+ AppConst.SEPERATOR_OF_IMG_AND_SOUND.length());
@@ -215,7 +215,7 @@ public class PictureActivity extends Activity {
 		image = (ImageView) findViewById(R.id.imageView);
 		DisplayMetrics displayMetric = getResources().getDisplayMetrics();
 		int imgWidth = Math.round(displayMetric.widthPixels * 1.0f);
-		int imgHeight = Math.round(displayMetric.heightPixels * 0.7f);
+		int imgHeight = Math.round(displayMetric.heightPixels * 0.5f);
 		// Layou param = (LayoutParams)imageView.getLayoutParams();
 		android.widget.RelativeLayout.LayoutParams param = (android.widget.RelativeLayout.LayoutParams) image
 				.getLayoutParams();
@@ -331,7 +331,7 @@ public class PictureActivity extends Activity {
 			count = 0;
 			processValue = 0;
 			playBtn.setEnabled(true);
-			playBtn.setBackgroundResource(R.drawable.playbtn3);
+			playBtn.setBackgroundResource(R.drawable.play_button1);
 
 			chooseSoundBtn.setEnabled(true);
 			chooseSoundBtn
@@ -439,7 +439,7 @@ public class PictureActivity extends Activity {
 			seekBar.setProgress(mp.getCurrentPosition());
 			isPlaying = false;
 			processValue = seekBar.getProgress();
-			playBtn.setBackgroundResource(R.drawable.playbtn3);
+			playBtn.setBackgroundResource(R.drawable.pause_button1);
 			saveBtn.setEnabled(true);
 			chooseSoundBtn.setEnabled(true);
 			recordBtn.setEnabled(true);

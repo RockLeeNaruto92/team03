@@ -20,7 +20,7 @@
         />
 	</LinearLayout>
     <ImageView
-        
+        android:layout_below="@+id/dd"
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="15dip"
-            android:background="@drawable/play_button1"
+            android:background="@drawable/play_button_disable1"
             android:enabled="false" />
 
         <Button
@@ -88,7 +88,7 @@
             android:id="@+id/saveBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/save_button1"
+            android:background="@drawable/save_button_disable1"
             android:enabled="false" />
     </LinearLayout>
 

@@ -2,23 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@drawable/nexus7">
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="15dip"
-        android:text="@string/xemphim"
+        android:text="Photo Sound ver1.0 build 1885"        
         android:textSize="18sp" />
-    
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:gravity="center"
-        android:text="@string/parsed_data"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold" />
-    
-
+        android:padding="15dip"
+        android:text=""        
+        android:textSize="18sp" />    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dip"
+        android:text="Photo Sound ver1.0 build 1885"        
+        android:textSize="18sp" />
+	
 </LinearLayout>
