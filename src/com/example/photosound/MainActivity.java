@@ -28,20 +28,20 @@ public class MainActivity extends TabActivity {
 		//Khởi tạo tab hình ảnh
 		TabSpec photospec = tabHost.newTabSpec("HinhAnh");
 		//Thiết lập tên tab hiển thị và icon
-		photospec.setIndicator("Home", getResources().getDrawable(R.drawable.icon_photos_tab));
+		photospec.setIndicator("", getResources().getDrawable(R.drawable.icon_photos_tab));
 		//Thiết lập nôi dung cho tab này là activity HinhAnhActivity.class
 		Intent photosIntent = new Intent(MainActivity.this, HomeActivity.class);
 		photospec.setContent(photosIntent);
 
 		//Khởi tạo tab nghe nhạc
 		TabSpec songspec = tabHost.newTabSpec("NgheNhac");
-		songspec.setIndicator("Marked Photo", getResources().getDrawable(R.drawable.icon_songs_tab));
+		songspec.setIndicator("", getResources().getDrawable(R.drawable.icon_songs_tab));
 		Intent songsIntent = new Intent(this, MarkedActivity.class);
 		songspec.setContent(songsIntent);
 
 		//Khởi tạo tab xem phim
 		TabSpec videospec = tabHost.newTabSpec("XemPhim");
-		videospec.setIndicator("Profile", getResources().getDrawable(R.drawable.icon_videos_tab));
+		videospec.setIndicator("", getResources().getDrawable(R.drawable.icon_videos_tab));
 		Intent videosIntent = new Intent(this, ProfileActivity.class);
 		videospec.setContent(videosIntent);
 

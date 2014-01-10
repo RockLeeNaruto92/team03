@@ -10,6 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.BitmapFactory.Options;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,22 +27,15 @@ import android.util.Log;
 import android.view.View;
 import android.vn.R;
 import android.widget.Button;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
-import android.app.Activity;
-import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.BitmapFactory.Options;
 
 public class HomeActivity extends Activity {
 	private Button TakePhoto, Gallery;
 	private ImageView image;
+	private final int SELECT_PICTURE = 1;
+	private int TAKE_PICTURE = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class HomeActivity extends Activity {
 		image = (ImageView) findViewById(R.id.App_Icon);
 
 		DisplayMetrics displayMetric = getResources().getDisplayMetrics();
-		int buttonWidth = Math.round(displayMetric.widthPixels * 0.25f);
+		int buttonWidth = Math.round(displayMetric.widthPixels * 0.4f);
 		int buttonHeight = Math.round(displayMetric.heightPixels * 0.1f);
 		LayoutParams param = (LayoutParams) TakePhoto.getLayoutParams();
 		param.width = buttonWidth;
@@ -55,10 +55,10 @@ public class HomeActivity extends Activity {
 		Gallery.setLayoutParams(param);
 		LayoutParams param1 = (LayoutParams) image.getLayoutParams();
 
-		int image_width = Math.round(displayMetric.widthPixels * 0.55f);
+		int image_width = Math.round(displayMetric.widthPixels * 0.5f);
 		int image_height = Math.round(displayMetric.heightPixels * 0.4f);
-		param1.width = buttonWidth;
-		param1.height = buttonHeight;
+		param1.width = image_width;
+		param1.height = image_height;
 		image.setLayoutParams(param1);
 
 		TakePhoto.setOnClickListener(new View.OnClickListener() {
@@ -69,8 +69,8 @@ public class HomeActivity extends Activity {
 				deletePhoto();
 				Intent intent = new Intent(
 						android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-				// intent.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoUri());
-				startActivityForResult(intent, 0);
+//				intent.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoUri());
+				startActivityForResult(intent, TAKE_PICTURE);
 			}
 		});
 		Gallery.setOnClickListener(new View.OnClickListener() {
@@ -78,16 +78,51 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				// Gallery.setBackgroundResource(R.drawable.button7_hover);
+				// Gallery.setBackgroundResource(R.drawable.button7);
+				// Gallery.setBackgroundResource(R.drawable.button7_hover);
+				// Gallery.setBackgroundResource(R.drawable.button7);
 				Log.d("Press", "Gallery");
-				Intent intent_gallery = new Intent(HomeActivity.this,
-						GetImageFromGallery.class);
-				startActivity(intent_gallery);
+				// Intent intent_gallery = new Intent(HomeActivity.this,
+				// GetImageFromGallery.class);
+				// startActivity(intent_gallery);
+				Intent intent = new Intent();
+				intent.setType("image/*");
+				intent.setAction(Intent.ACTION_GET_CONTENT);
+				startActivityForResult(
+						Intent.createChooser(intent, "Select Picture"),
+						SELECT_PICTURE);
 			}
 		});
 		// LayoutParams param = TakePhoto.
 
 	}
 
+	/**
+	 * @athor huynh
+	 * @return Uri
+	 */
+	public Uri getPhotoUri() {
+		File rootFolder = Environment.getExternalStorageDirectory();
+		File tempPhoto = new File(rootFolder.getAbsolutePath() + File.separator
+				+ "tmp.jpg");
+		try {
+			if (!tempPhoto.exists()) {
+				tempPhoto.createNewFile();
+				Log.d("TAGANH", "ok");
+			}
+
+			Uri temPhotoUri = Uri.fromFile(tempPhoto);
+			return temPhotoUri;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Uri.EMPTY;
+		}
+	}
+
+	/**
+	 * @author huynh
+	 */
 	public void deletePhoto() {
 		File rootFolder = Environment.getExternalStorageDirectory();
 		File tempPhoto = new File(rootFolder.getAbsolutePath() + File.separator
@@ -97,74 +132,88 @@ public class HomeActivity extends Activity {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onActivityResult(int, int,
-	 * android.content.Intent)
-	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-		if (resultCode == RESULT_CANCELED)
-			return;
-
-		Uri fileName = data.getData();
-
-		Bitmap bmp = null;
-		try {
-			InputStream is = getContentResolver().openInputStream(fileName);
-			Options option = new Options();
-			option.inSampleSize = 8;
-			bmp = BitmapFactory.decodeStream(is, null, option);
-			is.close();
-
-			if (bmp != null) {
-				bmp = rotateBitmap(bmp, fileName);
-			}
-		} catch (Exception e) {
-			Log.e("decode", "" + e.getMessage());
-		}
-
-		String path = Environment.getExternalStorageDirectory().toString();
-		OutputStream fOutputStream = null;
-		File file = new File(Environment.getExternalStorageDirectory()
-				.getAbsoluteFile() + File.separator + "rotate.jpg");
-		if (file.exists()) {
-			file.delete();
-		}
-		try {
-			file.createNewFile();
-			fOutputStream = new FileOutputStream(file);
-
-			bmp.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
-
-			fOutputStream.flush();
-			fOutputStream.close();
-
-			MediaStore.Images.Media.insertImage(getContentResolver(),
-					file.getAbsolutePath(), file.getName(), file.getName());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-			Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
+		if (resultCode != RESULT_OK) {
 			return;
 		}
 
-		Intent intent = new Intent(HomeActivity.this, PictureActivity.class);
-		intent.putExtra("BitmapImage", Environment
-				.getExternalStorageDirectory().getAbsolutePath()
-				+ File.separator + "rotate.jpg");
-		intent.putExtra("fromGallery", false);
-		AppUtils.logString("putextras");
-		startActivity(intent);
-		finish();
+		if (requestCode == SELECT_PICTURE) {
+			Uri selectedImageUri = data.getData();
+            String selectedImagePath = getPath(selectedImageUri);
+            
+			data.setClass(HomeActivity.this, PictureActivity.class);
+			data.putExtra("imgPath", selectedImagePath);
+			data.putExtra("fromGallery", true);
+			startActivity(data);
+		} else if ( requestCode == TAKE_PICTURE){
+			Uri selectedImageUri = data.getData();
+            String selectedImagePath = getPath(selectedImageUri);
+            
+           // Uri fileName = data.getData();
+
+    		Bitmap bmp = null;
+    		try {
+    			InputStream is = getContentResolver().openInputStream(selectedImageUri);
+    			Options option = new Options();
+    			option.inSampleSize = 2;
+    			bmp = BitmapFactory.decodeStream(is, null, option);
+    			is.close();
+
+    			if (bmp != null) {
+    				bmp = rotateBitmap(bmp,selectedImageUri);
+    				//imageView.setImageBitmap(bmp);
+    			}
+    		} catch (Exception e) {
+    			Log.e("decode", "" + e.getMessage());
+    		}
+
+    		
+    		String path = Environment.getExternalStorageDirectory().toString();
+    		OutputStream fOutputStream = null;
+    		selectedImagePath = Environment.getExternalStorageDirectory()
+    				.getAbsoluteFile() + File.separator + "rotate.jpg";
+    		File file = new File(selectedImagePath);
+    		if (file.exists()) {
+    			file.delete();
+    		}
+    		try {
+    			file.createNewFile();
+    			fOutputStream = new FileOutputStream(file);
+
+    			bmp.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
+
+    			fOutputStream.flush();
+    			fOutputStream.close();
+
+    			MediaStore.Images.Media.insertImage(getContentResolver(),
+    					file.getAbsolutePath(), file.getName(), file.getName());
+    		} catch (FileNotFoundException e) {
+    			e.printStackTrace();
+    			Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
+    			return;
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    			Toast.makeText(this, "Save Failed", Toast.LENGTH_SHORT).show();
+    			return;
+    		}
+            
+			data.setClass(HomeActivity.this, PictureActivity.class);
+			data.putExtra("imgPath", selectedImagePath);
+			data.putExtra("fromCamera", true);
+			startActivity(data);
+		}
 	}
 
-	private Bitmap rotateBitmap(Bitmap inputBmp, Uri fileName) {
+    public String getPath(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+    
+    private Bitmap rotateBitmap(Bitmap inputBmp, Uri fileName) {
 
 		Bitmap rotatedBitmap = null;
 
@@ -238,5 +287,4 @@ public class HomeActivity extends Activity {
 
 		return rotatedBitmap;
 	}
-
 }

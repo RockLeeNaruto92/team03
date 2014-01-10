@@ -32,7 +32,6 @@ public class MarkedActivity extends Activity implements OnItemClickListener {
 	public Integer[] mThumbd;
 	public Integer Image_Count = 0;
 	private ImageButton BtnPlay;
-	TextView tvMsg;
 	GridView viewImage;
 
 	TextView tvSolo;
@@ -62,7 +61,6 @@ public class MarkedActivity extends Activity implements OnItemClickListener {
 	}
 
 	public void getObjectXml() {
-		tvMsg = (TextView) findViewById(R.id.tvMsg);
 		setAllImageList();
 
 	}
@@ -115,11 +113,12 @@ public class MarkedActivity extends Activity implements OnItemClickListener {
 
 		Intent intent = new Intent(MarkedActivity.this, PictureActivity.class);
 		intent.putExtra(
-				"BitmapImage",
+				"imgPath",
 				AppUtils.getFilePath(AppConst.IMAGE_FOLDER + File.separator
 						+ imgPath));
 		AppUtils.logString(AppUtils.getFilePath(AppConst.IMAGE_FOLDER + File.separator
 						+ imgPath));
+		intent.putExtra("fromGallery", false);
 		startActivity(intent);
 		finish();
 	}

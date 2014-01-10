@@ -4,16 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity" >
-    <TextView
-        android:id="@+id/tvMsg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#1F8B82" />
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="3dp" />
+    tools:context=".MainActivity" >    
     <GridView
         android:id="@+id/gridView1"
         android:layout_width="fill_parent"
@@ -23,7 +14,7 @@
         android:columnWidth="90dp"
         android:stretchMode="columnWidth"
         android:gravity="center"
-        android:background="#CF8E72"
+        android:background="@drawable/nexus7"
         android:numColumns="auto_fit" >
     </GridView>
 </LinearLayout>

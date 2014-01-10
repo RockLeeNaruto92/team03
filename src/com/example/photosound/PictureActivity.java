@@ -6,6 +6,7 @@ package com.example.photosound;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 import android.app.Activity;
@@ -47,8 +48,8 @@ public class PictureActivity extends Activity {
 	private final Handler handler = new Handler();
 	private Chronometer chronometer;
 	private SeekBar seekBar;
-	private MediaPlayer mp;
-	private MediaRecorder recorder;
+	private MediaPlayer mp = null;
+	private MediaRecorder recorder = null;
 
 	private String imagePath;
 	private String soundPath;
@@ -66,9 +67,47 @@ public class PictureActivity extends Activity {
 		setContentView(R.layout.activity_picture);
 
 		getView();
-		getImagePath();
 
-		setBitmapToImageView(image, imagePath);
+		Bundle bundle = getIntent().getExtras();
+		if (bundle == null) {
+			return;
+		}
+
+		boolean fromGallery = bundle.getBoolean("fromGallery", false);
+		boolean fromCamera = bundle.getBoolean("fromCamera", false);
+		Options option = new Options();
+		option.inSampleSize = 4;
+
+		imagePath = bundle.getString("imgPath");
+		AppUtils.logString("imgPath: " + imagePath);
+		if (fromGallery) {
+			Uri imgUri = getIntent().getData();
+			try {
+
+				InputStream is = getContentResolver().openInputStream(imgUri);
+				Bitmap bmp = BitmapFactory.decodeStream(is, null, option);
+				is.close();
+				if (bmp != null) {
+					image.setImageBitmap(bmp);
+				}
+			} catch (Exception e) {
+				Log.e("Load Image", "" + e.getMessage());
+				return;
+			}
+
+		} else {
+			Bitmap bmp = BitmapFactory.decodeFile(imagePath, option);
+			if (bmp != null) {
+				image.setImageBitmap(bmp);
+			}
+		}
+
+		// getView();
+		// getImagePath();
+
+		// setBitmapToImageView(image, imagePath);
+		if (fromCamera)
+			return;
 
 		RandomAccessFile file;
 		try {
@@ -175,8 +214,8 @@ public class PictureActivity extends Activity {
 
 		image = (ImageView) findViewById(R.id.imageView);
 		DisplayMetrics displayMetric = getResources().getDisplayMetrics();
-		int imgWidth = Math.round(displayMetric.widthPixels * 0.9f);
-		int imgHeight = Math.round(displayMetric.heightPixels * 0.5f);
+		int imgWidth = Math.round(displayMetric.widthPixels * 1.0f);
+		int imgHeight = Math.round(displayMetric.heightPixels * 0.7f);
 		// Layou param = (LayoutParams)imageView.getLayoutParams();
 		android.widget.RelativeLayout.LayoutParams param = (android.widget.RelativeLayout.LayoutParams) image
 				.getLayoutParams();
@@ -259,17 +298,17 @@ public class PictureActivity extends Activity {
 				chronometer.setVisibility(View.VISIBLE);
 			}
 
-			playBtn.setBackgroundResource(R.drawable.playbtn3_disable);
+			playBtn.setBackgroundResource(R.drawable.play_button_disable1);
 			playBtn.setEnabled(false);
 
 			saveBtn.setBackgroundResource(R.drawable.save_disable);
 			saveBtn.setEnabled(false);
 
 			chooseSoundBtn
-					.setBackgroundResource(R.drawable.folder_sound2_disable);
+					.setBackgroundResource(R.drawable.choose_from_folder_disable1);
 			chooseSoundBtn.setEnabled(false);
 
-			recordBtn.setBackgroundResource(R.drawable.stopbtn);
+			recordBtn.setBackgroundResource(R.drawable.stop_button2);
 			chronometer.setVisibility(View.VISIBLE);
 			chronometer.setBase(SystemClock.elapsedRealtime());
 			chronometer.start();
@@ -288,17 +327,18 @@ public class PictureActivity extends Activity {
 			}
 
 		} else {
-			recordBtn.setBackgroundResource(R.drawable.microphone1);
+			recordBtn.setBackgroundResource(R.drawable.record_button3);
 			count = 0;
 			processValue = 0;
 			playBtn.setEnabled(true);
 			playBtn.setBackgroundResource(R.drawable.playbtn3);
 
 			chooseSoundBtn.setEnabled(true);
-			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2);
+			chooseSoundBtn
+					.setBackgroundResource(R.drawable.choose_from_folder1);
 
 			saveBtn.setEnabled(true);
-			saveBtn.setBackgroundResource(R.drawable.save2);
+			saveBtn.setBackgroundResource(R.drawable.save_button1);
 
 			chronometer.stop();
 			// Stop and free recorder
@@ -359,7 +399,7 @@ public class PictureActivity extends Activity {
 
 		if (isPlaying == false) {
 			isPlaying = true;
-			playBtn.setBackgroundResource(R.drawable.pausebtn);
+			playBtn.setBackgroundResource(R.drawable.pause_button1);
 			if (seekBar.getVisibility() == View.GONE) {
 				seekBar.setVisibility(View.VISIBLE);
 				chronometer.setVisibility(View.GONE);
@@ -386,11 +426,11 @@ public class PictureActivity extends Activity {
 			startPlayProgressUpdater();
 
 			recordBtn.setEnabled(false);
-			recordBtn.setBackgroundResource(R.drawable.recordbtn_disable);
+			recordBtn.setBackgroundResource(R.drawable.record_button_disable1);
 
 			chooseSoundBtn.setEnabled(false);
 			chooseSoundBtn
-					.setBackgroundResource(R.drawable.folder_sound2_disable);
+					.setBackgroundResource(R.drawable.choose_from_folder_disable1);
 
 			saveBtn.setEnabled(false);
 			saveBtn.setBackgroundResource(R.drawable.save_disable);
@@ -404,9 +444,10 @@ public class PictureActivity extends Activity {
 			chooseSoundBtn.setEnabled(true);
 			recordBtn.setEnabled(true);
 
-			saveBtn.setBackgroundResource(R.drawable.save2);
-			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2);
-			recordBtn.setBackgroundResource(R.drawable.recordbtn);
+			saveBtn.setBackgroundResource(R.drawable.save_button1);
+			chooseSoundBtn
+					.setBackgroundResource(R.drawable.choose_from_folder1);
+			recordBtn.setBackgroundResource(R.drawable.record_button3);
 			mp.pause();
 		}
 
@@ -427,16 +468,17 @@ public class PictureActivity extends Activity {
 			handler.postDelayed(notification, 1000);
 		} else {
 			mp.pause();
-			playBtn.setBackgroundResource(R.drawable.playbtn3);
+			playBtn.setBackgroundResource(R.drawable.play_button1);
 			seekBar.setProgress(0);
 
 			saveBtn.setEnabled(true);
 			chooseSoundBtn.setEnabled(true);
 			recordBtn.setEnabled(true);
 
-			saveBtn.setBackgroundResource(R.drawable.save2);
-			chooseSoundBtn.setBackgroundResource(R.drawable.folder_sound2);
-			recordBtn.setBackgroundResource(R.drawable.recordbtn);
+			saveBtn.setBackgroundResource(R.drawable.save_button1);
+			chooseSoundBtn
+					.setBackgroundResource(R.drawable.choose_from_folder1);
+			recordBtn.setBackgroundResource(R.drawable.record_button3);
 		}
 	}
 
@@ -471,9 +513,9 @@ public class PictureActivity extends Activity {
 
 		share.setType("image/jpg");
 
-//		String imagePath = Environment
-//				.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-//				+ "/result.png";
+		// String imagePath = Environment
+		// .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+		// + "/result.png";
 
 		File imageFileToShare = new File(imagePath);
 
@@ -482,5 +524,7 @@ public class PictureActivity extends Activity {
 
 		startActivity(Intent.createChooser(share, "Share Image!"));
 	}
+	
+	
 
 }
